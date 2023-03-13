@@ -18,7 +18,6 @@ For general information about how to contribute to Exercism, please refer to the
 * [Advanced: Complete Local Setup](#advanced-complete-local-setup)
   * [Tip: `gradle clean` before `exercism fetch`](#tip-gradle-clean-before-exercism-fetch)
 
-
 ## Overview
 
 This guide covers contributing to the Kotlin track.  If you are new, this guide is for you.
@@ -34,29 +33,32 @@ To submit a fix for an existing exercise or port an exercise to Kotlin with the 
 1. **Ensure you have the basic Java tooling installed:**  JDK 1.8+, an editor and Gradle 2.x.
 
    (see [exercism.io: Installing Kotlin](https://exercism.org/docs/tracks/kotlin/installation))
--  **Setup a branch on a fork of [exercism/kotlin](https://github.com/exercism/kotlin) on your computer.**
+
+- **Setup a branch on a fork of [exercism/kotlin](https://github.com/exercism/kotlin) on your computer.**
 
 Next steps:
-   * "fork" a repository on GitHub;
-   - install `git`;
-   - "clone" a copy of your fork;
-   - configure an "upstream remote" (in this case, `exercism/kotlin`);
-   - create a branch to house your work
--  **Write the codes.**  Do your work on that branch you just created.
 
-   The [Getting Familiar With the Codebase](#getting-familiar-with-the-codebase) section, below, is an orientation.
--  **Commit, push and create a pull request.**
+* "fork" a repository on GitHub;
 
-   Something like:
-   ```
-   $ git add .
-   $ git commit -m "(An intention-revealing commit message)"
-   $ git push
-   ```
+- install `git`;
+- "clone" a copy of your fork;
+- configure an "upstream remote" (in this case, `exercism/kotlin`);
+- create a branch to house your work
+- **Write the codes.**  Do your work on that branch you just created.
 
-   It is advised you write meaningful commit messages. [Chris Beams wrote about "How to Write a Git Commit Message"](https://chris.beams.io/posts/git-commit/).
+  The [Getting Familiar With the Codebase](#getting-familiar-with-the-codebase) section, below, is an orientation.
+- **Commit, push and create a pull request.**
 
--  **Verify that your work passes all tests.**  When you create a pull request (PR), GitHub triggers a build on Travis CI.  Your PR will not be merged unless those tests pass.
+  Something like:
+
+  ```
+  $ git add .
+  $ git commit -m "(An intention-revealing commit message)"
+  $ git push
+  ```
+
+  It is advised you write meaningful commit messages. [Chris Beams wrote about &#34;How to Write a Git Commit Message&#34;](https://chris.beams.io/posts/git-commit/).
+- **Verify that your work passes all tests.**  When you create a pull request (PR), GitHub triggers a build on Travis CI.  Your PR will not be merged unless those tests pass.
 
 ## Getting Familiar With the Codebase
 
@@ -71,15 +73,15 @@ This repo is a multi-project gradle build.
 
 This is the top-level module, contained in the `exercises` directory.  It is a container for the problem sub-modules.
 
-  * its `build.gradle` points the "main" sourceset to the reference solution.
-  * its `settings.gradle` names each of the subprojects, one for each problem in the set.
+* its `build.gradle` points the "main" sourceset to the reference solution.
+* its `settings.gradle` names each of the subprojects, one for each problem in the set.
 
 ### The Problem Submodules
 
 The `exercises` subdirectory contains all of the problem submodules.
 Each problem/submodule is a subdirectory of the same name as its slug.
 
-  * its `build.gradle.kts` names dependencies required to work that problem.
+* its `build.gradle.kts` names dependencies required to work that problem.
 
 Each problem/submodule has three source sets:
 
@@ -97,11 +99,12 @@ https://github.com/exercism/v3/blob/main/gradlew bob:test
 ```
 
 Steps for modifying an exercise:
+
 1. Change the test(s).
 2. Watch the changes fail.
 3. Update the reference solution to make the test(s) pass.
 
-----
+---
 
 ## Advanced: Complete Local Setup
 
