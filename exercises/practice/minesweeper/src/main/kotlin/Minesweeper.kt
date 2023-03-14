@@ -30,8 +30,10 @@ fun main(){
 
     for ((index,value) in flat.withIndex()){
         if(value == '·'){
-            val result = arr.find{ it > 5 }
-            println(result)
+            println(index)
+            val result = arr.filter{ it == index + 1 || it == index - 1 }
+            println("Adiacenti " + result.size)
         }
     }
+
 }
