@@ -24,7 +24,6 @@ data class MinesweeperBoard(private val inputBoard: List<String>) {
 private fun ricercaBombe(i: Int, j: Int, input: List<String>) :Int {
     var counter:Int = 0;
 
-    println("i[$i], j[$j]")
     //3 precedenti
     if(i > 0){
         if(j > 0){

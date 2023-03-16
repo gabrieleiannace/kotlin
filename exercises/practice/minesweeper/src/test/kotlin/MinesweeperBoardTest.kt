@@ -1,9 +1,9 @@
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import kotlin.test.assertEquals
 
+@Suppress("DEPRECATION")
 class MinesweeperBoardTest {
 
     /*
