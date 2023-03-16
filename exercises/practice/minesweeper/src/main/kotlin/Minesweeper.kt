@@ -1,4 +1,4 @@
-data class MinesweeperBoard(val todo: Nothing) {
+data class MinesweeperBoard(val todo: List<String>) {
 
 
     private var bombIndex = mutableListOf<Int>()
@@ -20,7 +20,7 @@ private fun calcolaAdiacenze(strings: List<String>, bombIndex: MutableList<Int>)
     for((indice, cella) in joinedString.withIndex()){
         if(cella == ' '){
             val numeroBombe = bombIndex.filter {
-                    it == (indice - 1) || it == (indice + 1) ||
+                (it == (indice - 1) && indice != 0) || (it == (indice + 1) && indice != strings[0].length - 1) ||
                             it == (indice - strings[0].length - 1) || it == (indice - strings[0].length) || it == (indice - strings[0].length + 1) ||
                             it == (indice + strings[0].length - 1) || it == (indice + strings[0].length) || it == (indice + strings[0].length + 1)
                 }.size
@@ -31,15 +31,18 @@ private fun calcolaAdiacenze(strings: List<String>, bombIndex: MutableList<Int>)
         }
     }
 
-    return result.chunked(5)
+    return result.chunked(strings[0].length)
 }
 
 
 fun main(){
-//    val inputBoard = listOf(
-//        " "
-//    )
-//    var istanza = MinesweeperBoard(inputBoard)
-//    println(istanza.withNumbers())
-
+    val inputBoard = listOf(
+        "*",
+        " ",
+        " ",
+        " ",
+        "*"
+    )
+    var istanza = MinesweeperBoard(inputBoard)
+    println(istanza.withNumbers())
 }
