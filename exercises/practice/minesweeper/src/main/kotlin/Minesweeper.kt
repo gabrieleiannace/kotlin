@@ -1,39 +1,34 @@
 data class MinesweeperBoard(val todo: List<String>) {
 
-    // TODO: Implement proper constructor
-//    init {
-//        println(todo);
-//    }
-
+    init{
+        //var bombIndex = mutableListOf<Int>()
+    }
+    var bombIndex = mutableListOf<Int>()
 
     fun withNumbers(): List<String> {
-
-        return emptyList()
+        todo.mapIndexed { index, item ->
+            item.mapIndexed { r, c ->
+                println("${if(c == '*') bombIndex.add(r+(item.length * index)) else " "}");
+            }
+        }
+        return emptyList();
     }
 }
 
+fun somma(a: Int, b: Int): Int {
+    return 1;
+}
+
+
 fun main(){
-    val strings = listOf("·*·*·", "··*··", "··*··", "·····");
-    var arr = emptyArray<Int>();
-
-    strings.mapIndexed{row, col ->
-        col.mapIndexed{r, c ->
-            if (c == '*') {
-                arr = arr.plus(r+(row * col.length));
-            }
-        }
-    }
-    println(arr.contentToString());
-
-    val flat = strings.flatMap { it.toList() }
-    println(flat)
-
-    for ((index,value) in flat.withIndex()){
-        if(value == '·'){
-            println(index)
-            val result = arr.filter{ it == index + 1 || it == index - 1 }
-            println("Adiacenti " + result.size)
-        }
-    }
+    val inputBoard = listOf(
+        "  *  ",
+        "  *  ",
+        "*****",
+        "  *  ",
+        "  *  "
+    )
+    var istanza = MinesweeperBoard(inputBoard);
+    println(istanza.withNumbers());
 
 }
