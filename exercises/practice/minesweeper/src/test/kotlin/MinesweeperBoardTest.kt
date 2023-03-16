@@ -23,7 +23,6 @@ class MinesweeperBoardTest {
         assertEquals(expectedNumberedBoard, actualNumberedBoard)
     }
 
-    @Ignore
     @Test
     fun testInputBoardWithOneRowAndNoColumns() {
         val inputBoard = listOf("")
