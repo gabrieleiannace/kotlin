@@ -4,6 +4,7 @@ data class MinesweeperBoard(private val inputBoard: List<String>) {
     private var mappaMine = "";
 
     fun withNumbers(): List<String> {
+        if(inputBoard.isEmpty()) return emptyList()
         inputBoard.mapIndexed{index, value ->
             for((indice, valore) in value.withIndex()){
                 if(valore == ' '){
@@ -14,7 +15,8 @@ data class MinesweeperBoard(private val inputBoard: List<String>) {
                 }
             }
         }
-        return mappaMine.chunked(inputBoard[0].length)
+        //return mappaMine.chunked(inputBoard[0]?.length)
+        return if(inputBoard[0].length != 0) mappaMine.chunked(inputBoard[0].length) else listOf("")
     }
 }
 
@@ -35,9 +37,10 @@ private fun ricercaBombe(i: Int, j: Int, input: List<String>) :Int {
     //precedente e successivo
     if(j > 0){
         if(input[i][j-1] == '*') counter++
-        if(j < input[0].length - 1)
-        if(input[i][j+1] == '*') counter++
     }
+    if(j < input[0].length - 1)
+        if(input[i][j+1] == '*') counter++
+
     //3 successivi
     if(i < input.size - 1){
         if(j > 0){
@@ -53,13 +56,4 @@ private fun ricercaBombe(i: Int, j: Int, input: List<String>) :Int {
 }
 
 fun main(){
-//    val inputBoard = listOf(
-//        "  *  ",
-//        "  *  ",
-//        "*****",
-//        "  *  ",
-//        "  *  "
-//    )
-//    var istanza = MinesweeperBoard(inputBoard)
-//    println(istanza.withNumbers())
 }

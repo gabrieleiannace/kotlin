@@ -15,7 +15,7 @@ class MinesweeperBoardTest {
     var expectedException: ExpectedException = ExpectedException.none()
 
     @Test
-    @Ignore
+
     fun testInputBoardWithNoRowsAndNoColumns() {
         val inputBoard = emptyList<String>()
         val expectedNumberedBoard = emptyList<String>()
@@ -24,7 +24,6 @@ class MinesweeperBoardTest {
         assertEquals(expectedNumberedBoard, actualNumberedBoard)
     }
 
-    @Ignore
     @Test
     fun testInputBoardWithOneRowAndNoColumns() {
         val inputBoard = listOf("")
