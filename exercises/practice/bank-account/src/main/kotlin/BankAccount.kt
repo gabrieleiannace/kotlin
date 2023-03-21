@@ -13,6 +13,3 @@ class BankAccount {
         isOpen = false
     }
 }
-fun main(){
-
-}
