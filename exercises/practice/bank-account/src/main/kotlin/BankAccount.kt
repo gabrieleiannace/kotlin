@@ -1,11 +1,18 @@
 class BankAccount {
-    // TODO: implement read access to 'balance'
 
-    fun adjustBalance(amount: Long){
-        TODO("Implement the function to complete the task")
+    private var isOpen: Boolean = true
+    var balance : Long = 0
+        get() { check( isOpen ); return field }
+        set( value ) { field = value }
+
+    @Synchronized fun adjustBalance(amount: Long){
+        balance += amount
     }
 
     fun close() {
-        TODO("Implement the function to complete the task")
+        isOpen = false
     }
+}
+fun main(){
+
 }
