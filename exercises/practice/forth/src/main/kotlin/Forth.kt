@@ -115,6 +115,15 @@ class Forth {
 class CustomException(message: String) : Exception(message)
 
 fun main(){
-    val myclass = Forth()
-    println( myclass.evaluate(": foo dup ;", ": foo dup dup ;", "1 foo" ))
+    var lista = listOf<String>(": foo dup ;", ": foo dup dup ;", "1 foo")
+    var myMap = emptyMap<String, String>()
+
+    lista.mapIndexed{index, cella ->
+        if(lista[index][0] == ':' && lista[index][lista[index].length - 1] == ';') {
+            println(lista[index].split(" ")[1])
+            val command = lista[index].split(" ").subList(2, lista[index].split(" ").size - 1).joinToString(" ")
+            myMap = myMap.plus(lista[index].split(" ")[1] to command)
+            println(myMap)
+        }
+    }
 }
