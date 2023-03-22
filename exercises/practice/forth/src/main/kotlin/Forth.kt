@@ -1,135 +1,183 @@
+import java.util.*
 class Forth {
-
-    private var isWordDefinition: Boolean = false
-    private var definedWordBuffer:String = ""
-    private var definedWord: String = ""
-
-    fun evaluate(vararg line: String): List<Int> {
-
-        var myMap = emptyMap<String, String>()
-
-        line.mapIndexed{ index, _ ->
-            if(line[index][0] == ':' && line[index][line[index].length - 1] == ';') {
-                println(line[index].split(" ")[1])
-                val command = line[index].split(" ").subList(2, line[index].split(" ").size - 1).joinToString(" ")
-                myMap = myMap.plus(line[index].split(" ")[1] to command)
-                println(myMap)
-            }
+    private val userDefOperations = mutableMapOf<String, List<String>>()
+    private fun operator(word: String, vararg args: Int, i: Int= 0): Int {
+        var result = 0
+        when (word){
+            "+" -> args.map { arg ->  result += arg}
+            "-" -> result = args[0] - args[1]
+            "*" -> result = args[0] * args[1]
+            "/" -> result = args[0] / args[1]
+            "dup" -> result = args[0]
         }
-
-
-
-
-
-        var evaluationStack = emptyList<Int>().toMutableList()
-        line.mapIndexed { indice, it ->
-            it.split(" ").mapIndexed { index, it ->
-                when (it){
-                    definedWord -> return (evaluate(line[indice].replace(definedWord, definedWordBuffer)))
-                    "+" ->
-                        if(!isWordDefinition) {
-                            if (evaluationStack.isEmpty()) throw CustomException("empty stack")
-                            else if (evaluationStack.size == 1) throw CustomException("only one value on the stack")
-                            else evaluationStack = listOf(evaluationStack[0] + evaluationStack[1]).toMutableList()
-                        }else{
-                            definedWordBuffer = definedWordBuffer.plus("$it ")
+        return result
+    }
+    private fun checkError(i: Int, stack: List<String>){
+        when(stack[i]){
+            "+","-","*","/","swap","over" ->
+                if (i == 0){
+                    throw Exception("empty stack")
+                }else if (i == 1){
+                    throw Exception("only one value on the stack")
+                }else if(stack[i] == "/" && stack[i-1].toInt() == 0){
+                    throw Exception("divide by zero")
+                }
+            "dup","drop" ->
+                if (i == 0){
+                    throw Exception("empty stack")
+                }
+            ":" ->
+                if (i == stack.size-1){
+                    throw Exception("undefined operation")
+                }else if (stack[i+1].toIntOrNull() != null){
+                    throw Exception("illegal operation")
+                }
+            else ->
+                if (userDefOperations.getOrDefault(stack[i], null) !is List){
+                    throw Exception("undefined operation")
+                }
+        }
+    }
+    fun evaluate(vararg lines: String): List<Int> {
+        val stack = mutableListOf<String>()
+        val finalStack = mutableListOf<Int>()
+        var i = 0
+        lines.map { line ->
+            val tempList = line.split(" ")
+            stack += tempList
+        }
+        stack.replaceAll { if (it.any { char -> char.isUpperCase() }) it.toLowerCase() else it }
+        while (i < stack.size){
+            if (userDefOperations.containsKey(stack[i])){ // Replace user modified words
+                val newWords = userDefOperations.getOrDefault(stack[i], listOf())
+                stack.addAll(i, newWords)
+                stack[i+newWords.size] = ""
+                stack.removeIf { it == "" }
+            }
+            println(stack)
+            println("i = $i")
+            if (stack[i].toIntOrNull() == null){
+                when(stack[i]){
+                    "+","-","*","/" ->
+                        try {
+                            checkError(i, stack)
+                            val a = stack[i-2]
+                            val b = stack[i-1]
+                            val c = operator(stack[i], a.toInt(), b.toInt()).toString()
+                            stack[i-2] = ""
+                            stack[i-1] = c
+                            stack[i] = ""
+                            stack.removeIf { it == "" }
+                            println(stack)
+                            i = 0
+                        }catch (err: Exception){
+                            println(err.message)
+                            throw err
                         }
-
-                    "-" ->
-                        if(!isWordDefinition) {
-                            if (evaluationStack.isEmpty()) throw CustomException("empty stack")
-                            else if (evaluationStack.size == 1) throw CustomException("only one value on the stack")
-                            else evaluationStack = listOf(evaluationStack[0] - evaluationStack[1]).toMutableList()
-                        }else{
-                            definedWordBuffer = definedWordBuffer.plus("$it ")
-                        }
-
-                    "*" ->
-                        if(!isWordDefinition) {
-                            if (evaluationStack.isEmpty()) throw CustomException("empty stack")
-                            else if (evaluationStack.size == 1) throw CustomException("only one value on the stack")
-                            else evaluationStack = listOf(evaluationStack[0] * evaluationStack[1]).toMutableList()
-                        }else{
-                            definedWordBuffer = definedWordBuffer.plus("$it ")
-                        }
-
-                    "/" ->
-                        if(!isWordDefinition) {
-                            if (evaluationStack.isEmpty() && !isWordDefinition) throw CustomException("empty stack")
-                            else if (evaluationStack.size == 1) throw CustomException("only one value on the stack")
-                            else if (evaluationStack[1] == 0) throw CustomException("divide by zero")
-                            else evaluationStack = listOf(evaluationStack[0] / evaluationStack[1]).toMutableList()
-                        } else{
-                            definedWordBuffer = definedWordBuffer.plus("$it ")
-                        }
-
-
                     "dup" ->
-                        if(!isWordDefinition) {
-                            if (evaluationStack.isEmpty()) throw CustomException("empty stack")
-                            else evaluationStack =
-                                evaluationStack.plus(evaluationStack[evaluationStack.size - 1]).toMutableList()
-                        } else {
-                            definedWordBuffer = definedWordBuffer.plus("$it ")
+                        try {
+                            checkError(i, stack)
+                            val a = stack[i-1]
+                            val b = operator(stack[i], a.toInt()).toString()
+                            stack[i] = b
+                            i = 0
+                        }catch (err: Exception){
+                            println(err.message)
+                            throw err
                         }
-
                     "drop" ->
-                        if(!isWordDefinition) {
-                            if (evaluationStack.isEmpty()) throw CustomException("empty stack")
-                            else evaluationStack.removeLastOrNull()
-                        }else{
-                            definedWordBuffer = definedWordBuffer.plus("$it ")
+                        try {
+                            checkError(i, stack)
+                            stack[i] = ""
+                            stack[i-1] = ""
+                            stack.removeIf { it == "" }
+                            i = 0
+                        }catch (err: Exception){
+                            println(err.message)
+                            throw err
                         }
-
                     "swap" ->
-                        if(!isWordDefinition) {
-                            if (evaluationStack.isEmpty() && !isWordDefinition) throw CustomException("empty stack")
-                            else if (evaluationStack.size == 1) throw CustomException("only one value on the stack")
-                            else {
-                                val tmp = evaluationStack[evaluationStack.size - 2]
-                                evaluationStack[evaluationStack.size - 2] = evaluationStack[evaluationStack.size - 1]
-                                evaluationStack[evaluationStack.size - 1] = tmp
-                            }
-                        }else{
-                            definedWordBuffer = definedWordBuffer.plus("$it ")
+                        try {
+                            checkError(i, stack)
+                            val a = stack[i-2]
+                            val b = stack[i-1]
+                            val c = a
+                            stack[i-2] = b
+                            stack[i-1] = c
+                            stack[i] = ""
+                            stack.removeIf { it == "" }
+                            i = 0
+                        }catch (err: Exception){
+                            println(err.message)
+                            throw err
                         }
                     "over" ->
-                        if(!isWordDefinition) {
-                            if (evaluationStack.isEmpty()) throw CustomException("empty stack")
-                            else if (evaluationStack.size == 1) throw CustomException("only one value on the stack")
-                            else {
-                                evaluationStack =
-                                    evaluationStack.plus(evaluationStack[evaluationStack.size - 2]).toMutableList()
-                            }
-                        }else{
-                            definedWordBuffer = definedWordBuffer.plus("$it ")
+                        try {
+                            checkError(i, stack)
+                            stack[i] = stack[i-2]
+                            stack.removeIf { it == "" }
+                            i = 0
+                        }catch (err: Exception){
+                            println(err.message)
+                            throw err
                         }
-                    ":" -> isWordDefinition = true
-                    ";" -> {
-                        isWordDefinition = false
-                        definedWordBuffer = definedWordBuffer.dropLast(1)
-                    }
+                    ":" ->
+                        try {
+                            checkError(i, stack)
+                            val tempStack = mutableListOf<String>()
+                            var j = i+2
+                            while (stack[j] != ";"){
+                                if (userDefOperations.containsKey(stack[j])){
+                                    val newWords = userDefOperations.getOrDefault(stack[j], listOf())
+                                    stack.addAll(j, newWords)
+                                    stack[j+newWords.size] = ""
+                                    stack.removeIf { it == "" }
+                                    j = i+2
+                                }else{
+                                    j++
+                                }
+                            }
+                            j = i+2
+                            while (stack[j] != ";"){
+                                tempStack += stack[j]
+                                stack[j] = ""
+                                j++
+                            }
+                            stack[j] = ""
+                            userDefOperations[stack[i+1]] = tempStack
+                            println("User Defined Operations = $userDefOperations")
+                            stack[i+1] = ""
+                            stack[i] = ""
+                            stack.removeIf { it == "" }
+                            i = 0
+                        }catch (err: Exception){
+                            println(err.message)
+                            throw err
+                        }
                     else ->
-                        if(myMap[it].isNullOrEmpty()) {
-                            evaluationStack = evaluationStack.plus(it.toInt()).toMutableList()
-                        }else{
-                            //return evaluate("$evaluationStack + ${myMap[it]}")
-                            if(evaluationStack.isNotEmpty()){
-                                return (evaluate("${evaluationStack.joinToString()} ${myMap[it]}"))
-                            }else{}
+                        try {
+                            checkError(i, stack)
+                            val newWords = userDefOperations.getOrDefault(stack[i], listOf())
+                            stack[i] = ""
+                            stack.addAll(i, newWords)
+                            stack.removeIf { it == "" }
+                            i = 0
+                        }catch (err: Exception){
+                            println(err.message)
+                            throw err
                         }
                 }
-        } }
-        return evaluationStack
+            }else{
+                i++
+            }
+        }
+        finalStack += stack.map { it.toInt() }
+        return finalStack
     }
-
-
-
 }
-
-class CustomException(message: String) : Exception(message)
-
-fun main(){
-    var myForth = Forth()
-    myForth.evaluate(": foo dup ;", ": foo dup dup ;", "1 foo")
+fun main() {
+    val l1 = mutableListOf<Int>(1,2,3)
+    val l2 = mutableListOf<Int>(11,12,13)
+    l1.addAll(1, l2)
+    println(l1)
 }
