@@ -5,6 +5,22 @@ class Forth {
     private var definedWord: String = ""
 
     fun evaluate(vararg line: String): List<Int> {
+
+        var myMap = emptyMap<String, String>()
+
+        line.mapIndexed{ index, _ ->
+            if(line[index][0] == ':' && line[index][line[index].length - 1] == ';') {
+                println(line[index].split(" ")[1])
+                val command = line[index].split(" ").subList(2, line[index].split(" ").size - 1).joinToString(" ")
+                myMap = myMap.plus(line[index].split(" ")[1] to command)
+                println(myMap)
+            }
+        }
+
+
+
+
+
         var evaluationStack = emptyList<Int>().toMutableList()
         line.mapIndexed { indice, it ->
             it.split(" ").mapIndexed { index, it ->
@@ -94,15 +110,14 @@ class Forth {
                         definedWordBuffer = definedWordBuffer.dropLast(1)
                     }
                     else ->
-                        if(!isWordDefinition) evaluationStack = evaluationStack.plus(it.toInt()).toMutableList()
-                        else {
-                            if(definedWord.isNotEmpty()){
-                                definedWordBuffer = definedWordBuffer.plus(("$it "))
-                            }else{
-                                definedWord = it
-                            }
+                        if(myMap[it].isNullOrEmpty()) {
+                            evaluationStack = evaluationStack.plus(it.toInt()).toMutableList()
+                        }else{
+                            //return evaluate("$evaluationStack + ${myMap[it]}")
+                            if(evaluationStack.isNotEmpty()){
+                                return (evaluate("${evaluationStack.joinToString()} ${myMap[it]}"))
+                            }else{}
                         }
-
                 }
         } }
         return evaluationStack
@@ -115,15 +130,6 @@ class Forth {
 class CustomException(message: String) : Exception(message)
 
 fun main(){
-    var lista = listOf<String>(": foo dup ;", ": foo dup dup ;", "1 foo")
-    var myMap = emptyMap<String, String>()
-
-    lista.mapIndexed{index, cella ->
-        if(lista[index][0] == ':' && lista[index][lista[index].length - 1] == ';') {
-            println(lista[index].split(" ")[1])
-            val command = lista[index].split(" ").subList(2, lista[index].split(" ").size - 1).joinToString(" ")
-            myMap = myMap.plus(lista[index].split(" ")[1] to command)
-            println(myMap)
-        }
-    }
+    var myForth = Forth()
+    myForth.evaluate(": foo dup ;", ": foo dup dup ;", "1 foo")
 }
